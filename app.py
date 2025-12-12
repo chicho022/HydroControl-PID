@@ -55,6 +55,7 @@ root = tk.Tk()
 root.title("HydraFlow - Control de Nivel y Flujo")
 root.geometry("900x600")
 root.minsize(800, 500)
+root.configure(bg="#EAF6FB")
 
 # ===============================
 style = ttk.Style()
@@ -75,19 +76,58 @@ style.configure(
     font=("Segoe UI", 10),
     foreground="gray"
 )
+style = ttk.Style()
+style.theme_use("default")
 
-# ===============================
+style.configure(
+    "Main.TFrame",
+    background="#EAF6FB"
+)
+
+style.configure(
+    "Panel.TFrame",
+    background="#D6EEF8",
+    padding=20
+)
+
+style.configure(
+    "Title.TLabel",
+    font=("Segoe UI", 20, "bold"),
+    background="#D6EEF8",
+    foreground="#1F2D3D"
+)
+
+style.configure(
+    "Text.TLabel",
+    font=("Segoe UI", 12),
+    background="#D6EEF8",
+    foreground="#1F2D3D"
+)
+
+style.configure(
+    "Status.TLabel",
+    font=("Segoe UI", 10),
+    background="#EAF6FB",
+    foreground="#6B7280"
+)
+
+style.configure(
+    "Control.TButton",
+    font=("Segoe UI", 11),
+    padding=8
+)
+
+
 # Contenedor principal
-# ===============================
-container = ttk.Frame(root)
+
+container = ttk.Frame(root, style="Main.TFrame")
 container.pack(fill="both", expand=True)
 
 container.grid_rowconfigure(0, weight=1)
 container.grid_columnconfigure(0, weight=1)
 
-# ===============================
 # Diccionario de pantallas
-# ===============================
+
 frames = {}
 
 def show_frame(name):
@@ -118,7 +158,7 @@ ttk.Label(
 
 frames["Inicio"] = inicio
 # ----- Gráfica de nivel -----
-fig = Figure(figsize=(5, 3), dpi=100)
+fig = Figure(figsize=(6, 4), dpi=100)
 ax = fig.add_subplot(111)
 
 ax.set_title("Nivel del Tanque")
@@ -135,14 +175,25 @@ canvas.get_tk_widget().pack(pady=10, fill="both", expand=True)
 # ===============================
 control = ttk.Frame(container)
 control.grid(row=0, column=0, sticky="nsew")
-
 panel_control = ttk.Frame(control, style="Panel.TFrame")
 panel_control.pack(expand=True)
-btn_start = ttk.Button(panel_control, text="Iniciar PID", command=start_pid)
-btn_start.pack(pady=5)
+btn_start = ttk.Button(
+    panel_control,
+    text="Iniciar PID",
+    style="Control.TButton",
+    command=start_pid
+)
+btn_start.pack(pady=6)
 
-btn_stop = ttk.Button(panel_control, text="Detener PID", command=stop_pid)
-btn_stop.pack(pady=5)
+btn_stop = ttk.Button(
+    panel_control,
+    text="Detener PID",
+    style="Control.TButton",
+    command=stop_pid
+)
+btn_stop.pack(pady=6)
+status_bar = ttk.Frame(root, style="Main.TFrame", padding=(10, 5))
+
 
 ttk.Label(
     panel_control,
