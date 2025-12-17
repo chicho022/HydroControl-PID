@@ -9,6 +9,8 @@ from matplotlib.figure import Figure
 UDP_IP = "127.0.0.1"   # Cambiar por IP del STM32
 UDP_PORT_RX = 5005    # Puerto donde recibís nivel
 UDP_PORT_TX = 5006    # Puerto donde enviás comandos
+SP_MIN = 1.0   # cm
+SP_MAX = 24.0  # cm
 sock_rx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock_rx.bind((UDP_IP, UDP_PORT_RX))
 
@@ -42,6 +44,25 @@ def send_control_mode():
     sock_tx.sendto(msg, (UDP_IP, UDP_PORT_TX))
     status_label.config(text=f"Modo activo: {mode}")
 
+def send_setpoint():
+    try:
+        sp = setpoint_var.get()
+
+        # Validación de rango
+        if sp < SP_MIN or sp > SP_MAX:
+            status_label.config(
+                text=f"Setpoint fuera de rango ({SP_MIN}–{SP_MAX} cm)"
+            )
+            return
+
+        msg = f"SP:{sp:.2f}".encode()
+        sock_tx.sendto(msg, (UDP_IP, UDP_PORT_TX))
+        status_label.config(text=f"Setpoint aplicado: {sp:.2f} cm")
+
+    except tk.TclError:
+        status_label.config(text="Setpoint inválido (no numérico)")
+
+
 def update_plot():
     line.set_data(time_data, nivel_data)
     ax.relim()
@@ -62,6 +83,7 @@ root.configure(bg="#EAF6FB")
 # Variables globales
 # ===============================
 control_mode = tk.StringVar(value="PID")
+setpoint_var = tk.DoubleVar(master=root, value=0.0)
 
 # ===============================
 style = ttk.Style()
@@ -180,7 +202,7 @@ panel_control.pack(expand=True)
 
 ttk.Label(
     panel_control,
-    text="Pantalla de Control",
+    text="Control del Sistema",
     style="Title.TLabel"
 ).pack(pady=(0, 10))
 
@@ -207,6 +229,32 @@ radio_mpc = ttk.Radiobutton(
     command=send_control_mode
 )
 radio_mpc.pack(anchor="w", padx=20)
+
+ttk.Label(
+    panel_control,
+    text="Setpoint de Nivel [cm]",
+    style="Text.TLabel"
+).pack(pady=(15, 5))
+
+entry_sp = ttk.Entry(
+    panel_control,
+    textvariable=setpoint_var,
+    width=10
+)
+entry_sp.pack()
+ttk.Label(
+    panel_control,
+    text="Rango permitido: 1 – 24 cm",
+    style="Text.TLabel"
+).pack()
+
+btn_sp = ttk.Button(
+    panel_control,
+    text="Enviar Setpoint",
+    style="Control.TButton",
+    command=send_setpoint
+)
+btn_sp.pack(pady=8)
 
 
 frames["Control"] = control
