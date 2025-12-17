@@ -22,13 +22,13 @@ time_data = []
 control_data = []
 
 
-
-
 def send_control_mode():
     mode = control_mode.get()
     msg = f"MODE:{mode}".encode()
     sock_tx.sendto(msg, (UDP_IP, UDP_PORT_TX))
     status_label.config(text=f"Modo activo: {mode}")
+    log_event(f"Modo de control cambiado a {mode}")
+
 
 def send_setpoint():
     try:
@@ -44,10 +44,13 @@ def send_setpoint():
         msg = f"SP:{sp:.2f}".encode()
         sock_tx.sendto(msg, (UDP_IP, UDP_PORT_TX))
         status_label.config(text=f"Setpoint aplicado: {sp:.2f} cm")
+        log_event(f"Setpoint enviado: {sp:.2f} cm")
+
 
     except tk.TclError:
         status_label.config(text="Setpoint inválido (no numérico)")
 def udp_listener():
+    log_event("Escuchando datos UDP...")
     while True:
         data, _ = sock_rx.recvfrom(1024)
         try:
@@ -69,6 +72,13 @@ def udp_listener():
 
         except:
             pass
+
+def log_event(msg):
+    timestamp = time.strftime("%H:%M:%S")
+    log_text.configure(state="normal")
+    log_text.insert("end", f"[{timestamp}] {msg}\n")
+    log_text.see("end")
+    log_text.configure(state="disabled")
 
 
 def update_plot():
@@ -318,6 +328,18 @@ diagnostico = ttk.Frame(container)
 diagnostico.grid(row=0, column=0, sticky="nsew")
 
 panel_diag = ttk.Frame(diagnostico, style="Panel.TFrame")
+log_text = tk.Text(
+    panel_diag,
+    height=12,
+    width=70,
+    state="disabled",
+    wrap="word",
+    bg="#F5FAFF",
+    fg="#1F2D3D",
+    font=("Consolas", 10)
+)
+log_text.pack(pady=10, fill="both", expand=True)
+
 panel_diag.pack(expand=True)
 
 ttk.Label(
