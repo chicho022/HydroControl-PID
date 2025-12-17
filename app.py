@@ -108,7 +108,7 @@ style.configure(
     "Status.TLabel",
     font=("Segoe UI", 10),
     background="#EAF6FB",
-    foreground="#6B7280"
+    foreground="#7FA0E0"
 )
 
 style.configure(
