@@ -14,13 +14,6 @@ sock_rx.bind((UDP_IP, UDP_PORT_RX))
 
 sock_tx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-def start_pid():
-    sock_tx.sendto(b"START_PID", (UDP_IP, UDP_PORT_TX))
-    status_label.config(text="PID: ACTIVO")
-
-def stop_pid():
-    sock_tx.sendto(b"STOP_PID", (UDP_IP, UDP_PORT_TX))
-    status_label.config(text="PID: DETENIDO")
 t0 = time.time()
 nivel_data = []
 time_data = []
@@ -76,8 +69,6 @@ style.configure(
     font=("Segoe UI", 10),
     foreground="gray"
 )
-style = ttk.Style()
-style.theme_use("default")
 
 style.configure(
     "Main.TFrame",
@@ -177,21 +168,8 @@ control = ttk.Frame(container)
 control.grid(row=0, column=0, sticky="nsew")
 panel_control = ttk.Frame(control, style="Panel.TFrame")
 panel_control.pack(expand=True)
-btn_start = ttk.Button(
-    panel_control,
-    text="Iniciar PID",
-    style="Control.TButton",
-    command=start_pid
-)
-btn_start.pack(pady=6)
 
-btn_stop = ttk.Button(
-    panel_control,
-    text="Detener PID",
-    style="Control.TButton",
-    command=stop_pid
-)
-btn_stop.pack(pady=6)
+
 status_bar = ttk.Frame(root, style="Main.TFrame", padding=(10, 5))
 
 
