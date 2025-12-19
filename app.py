@@ -104,9 +104,14 @@ def update_plot():
         control_label.config(
             text=f"Control u: {u:.1f}  ({sentido})"
         )
-    if time_data:
-        t_max = time_data[-1]
-        ax.set_xlim(max(0, t_max - AX_T_WINDOW), t_max)
+if time_data:
+    t_max = time_data[-1]
+
+    if t_max > AX_T_WINDOW:
+        ax.set_xlim(t_max - AX_T_WINDOW, t_max)
+    else:
+        ax.set_xlim(0, AX_T_WINDOW)
+
     # ----- Indicador de setpoint -----
     if nivel_data:
         nivel_actual = nivel_data[-1]
