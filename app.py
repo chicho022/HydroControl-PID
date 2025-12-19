@@ -6,14 +6,16 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-UDP_IP = "192.168.56.1"   # Cambiar por IP del STM32
+#UDP_IP = "192.168.56.1"   # Cambiar por IP del STM32
 UDP_PORT_RX = 5005    # Puerto donde recibís nivel
 UDP_PORT_TX = 5006    # Puerto donde enviás comandos
+UDP_IP_RX = "0.0.0.0"          # para bind (GUI escucha)
+UDP_IP_TX = "192.168.1.12"     # IP DEL ESP32 o SIMULADOR
 SP_MIN = 1.0   # cm
 SP_MAX = 24.0  # cm
 TOLERANCIA_SP = 0.5  # cm
 sock_rx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock_rx.bind((UDP_IP, UDP_PORT_RX))
+sock_rx.bind((UDP_IP_RX, UDP_PORT_RX))
 
 sock_tx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -26,7 +28,7 @@ control_data = []
 def send_control_mode():
     mode = control_mode.get()
     msg = f"MODE:{mode}".encode()
-    sock_tx.sendto(msg, (UDP_IP, UDP_PORT_TX))
+    sock_tx.sendto(msg, (UDP_IP_TX, UDP_PORT_TX))
     status_label.config(text=f"Modo activo: {mode}")
     log_event(f"Modo de control cambiado a {mode}")
 
@@ -43,7 +45,7 @@ def send_setpoint():
             return
 
         msg = f"SP:{sp:.2f}".encode()
-        sock_tx.sendto(msg, (UDP_IP, UDP_PORT_TX))
+        sock_tx.sendto(msg, (UDP_IP_TX, UDP_PORT_TX))
         status_label.config(text=f"Setpoint aplicado: {sp:.2f} cm")
         log_event(f"Setpoint enviado: {sp:.2f} cm")
 
